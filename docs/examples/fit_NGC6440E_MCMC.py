@@ -2,6 +2,7 @@
 """Demonstrate fitting from a script."""
 from __future__ import print_function, division
 import os
+import pickle
 import pint.toa
 import pint.models
 import pint.mcmc_fitter
@@ -54,7 +55,7 @@ plt.title("%s Pre-Fit Timing Residuals" % m.PSR.value)
 plt.xlabel("MJD")
 plt.ylabel("Residual (phase)")
 plt.grid()
-plt.show()
+#plt.show()
 
 # Now do the fit
 print("Fitting...")
@@ -82,11 +83,12 @@ print(f.fit_toas(nsteps))
 
 # plotting the chains
 chains = sampler.chains_to_dict(f.fitkeys)
+pickle.dump(chains, open(f.model.PSR.value + "_chains.pickle", "wb"))
 plot_chains(chains, file=f.model.PSR.value + "_chains.png")
 
 # triangle plot
-# this doesn't include burn-in because we're not using it here, otherwise would have middle ':' --> 'burnin:'
-samples = sampler.sampler.chain[:, :, :].reshape((-1, f.n_fit_params))
+# The nsteps/4: cuts off the first 1/4 of the samples for burnin
+samples = sampler.sampler.chain[:, nsteps//4:, :].reshape((-1, f.n_fit_params))
 try:
     import corner
 
@@ -115,4 +117,4 @@ plt.title("%s Post-Fit Timing Residuals" % m.PSR.value)
 plt.xlabel("MJD")
 plt.ylabel("Residual (us)")
 plt.grid()
-plt.show()
+#plt.show()
