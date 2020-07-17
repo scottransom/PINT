@@ -176,6 +176,7 @@ class Glitch(PhaseComponent):
                 decayterm = 0.0 * u.Unit("")
 
             log.info("{} {} ".format(dphs, dphs.unit))
+            # TODO this should use taylor honor.
             phs[affected] += (
                 dphs
                 + dt[affected]
@@ -219,7 +220,7 @@ class Glitch(PhaseComponent):
             )
         par_GLF0 = getattr(self, param)
         dpdGLF0 = np.zeros(len(tbl), dtype=np.longdouble) / par_GLF0.units
-        dpdGLF0[affected] = dt[affected]
+        dpdGLF0[affected] += dt[affected]
         return dpdGLF0
 
     def d_phase_d_GLF1(self, toas, param, delay):
