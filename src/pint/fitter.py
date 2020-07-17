@@ -750,6 +750,7 @@ class WLSFitter(Fitter):
                 if scale_by_F0:
                     un *= u.s
                 pv, dpv = fitpv[pn] * fitp[pn].units, dpars[uind] * un
+
                 fitpv[pn] = np.longdouble((pv + dpv) / fitp[pn].units)
                 # NOTE We need some way to use the parameter limits.
                 fitperrs[pn] = errs[uind]
