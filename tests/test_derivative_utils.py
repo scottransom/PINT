@@ -40,9 +40,12 @@ def get_derivative_funcs(model):
 def get_derivative_params(model):
     test_params = {}
     for p in model.params:
+        print(p)
         par = getattr(model, p)
         # remove all the JUMP and DMX right now.
         if par.frozen:
+            continue
+        if par.value is None:
             continue
         if p.endswith("EPOCH"):
             continue
