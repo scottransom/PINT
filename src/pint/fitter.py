@@ -60,9 +60,9 @@ To automatically select a fitter based on the properties of the data and model::
 
 import contextlib
 import copy
+from functools import cached_property
 from typing import Dict, List, Literal, Optional, Tuple, Union
 from warnings import warn
-from functools import cached_property
 
 import astropy.units as u
 import numpy as np
@@ -72,21 +72,16 @@ from loguru import logger as log
 from numdifftools import Hessian
 
 import pint
-from pint.models.timing_model import TimingModel
 from pint.exceptions import (
     ConvergenceFailure,
     CorrelatedErrors,
     DegeneracyWarning,
+    InvalidModelParameters,
     MaxiterReached,
     StepProblem,
 )
-from pint.models.parameter import (
-    AngleParameter,
-    InvalidModelParameters,
-    Parameter,
-    boolParameter,
-    strParameter,
-)
+from pint.models.parameter import AngleParameter, Parameter, boolParameter, strParameter
+from pint.models.timing_model import TimingModel
 from pint.pint_matrix import (
     CorrelationMatrix,
     CovarianceMatrix,
@@ -955,10 +950,11 @@ class DownhillFitter(Fitter):
         # setup
         self.model.validate()
         self.model.validate_toas(self.toas)
+
         current_state = self.create_state()
         best_state = current_state
         self.converged = False
-        # algorithm
+
         exception = None
 
         for i in range(maxiter):
