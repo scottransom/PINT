@@ -1029,7 +1029,7 @@ class DownhillFitter(Fitter):
 
         if exception is not None:
             warn("Unable to improve chi2 even with very small steps", StepProblem)
-            self.converged = False
+            return False
 
         if not self.converged:
             warn(f"Convergence not detected after {maxiter} steps.", MaxiterReached)
