@@ -939,7 +939,7 @@ class DownhillFitter(Fitter):
         maxiter=20,
         required_chi2_decrease=1e-2,
         max_chi2_increase=1e-2,
-        min_lambda=1e-3,
+        min_lambda=1e-4,
         debug=False,
     ) -> bool:
         """Downhill fit implementation for fitting the timing model parameters.
@@ -954,9 +954,7 @@ class DownhillFitter(Fitter):
         current_state = self.create_state()
         best_state = current_state
         self.converged = False
-
         exception = None
-
         for i in range(maxiter):
             step = current_state.step
             lambda_ = 1
@@ -969,14 +967,10 @@ class DownhillFitter(Fitter):
                         best_state = new_state
                     if chi2_decrease < -max_chi2_increase:
                         raise InvalidModelParameters(
-                            f"chi2 increased from {current_state.chi2} to {new_state.chi2} "
-                            f"when trying to take a step with lambda {lambda_}"
+                            f"chi2 increased from {current_state.chi2} to {new_state.chi2} when trying to take a step with lambda {lambda_}"
                         )
                     log.trace(
-                        f"Iteration {i}: "
-                        f"Updating state, chi2 goes down by {chi2_decrease} "
-                        f"from {current_state.chi2} "
-                        f"to {new_state.chi2}"
+                        f"Iteration {i}: Updating state, chi2 goes down by {chi2_decrease} from {current_state.chi2} to {new_state.chi2}"
                     )
                     exception = None
                     current_state = new_state
@@ -985,13 +979,9 @@ class DownhillFitter(Fitter):
                     # This could be an exception evaluating new_state.chi2 or an increase in value
                     # If bad parameter values escape, look in ModelState.resids for the except
                     # that should catch them
-                    lambda_ /= 2
+                    lambda_ /= 1.1
                     log.trace(f"Iteration {i}: Shortening step to {lambda_}: {e}")
                     if lambda_ < min_lambda:
-                        log.warning(
-                            f"Unable to improve chi2 even with very small steps, stopping "
-                            f"but keeping best state, message was: {e}"
-                        )
                         exception = e
                         break
             if (
@@ -1038,11 +1028,10 @@ class DownhillFitter(Fitter):
         self.update_model(self.current_state.chi2)
 
         if exception is not None:
-            raise StepProblem(
-                "Unable to improve chi2 even with very small steps"
-            ) from exception
+            warn("Unable to improve chi2 even with very small steps", StepProblem)
+
         if not self.converged:
-            raise MaxiterReached(f"Convergence not detected after {maxiter} steps.")
+            warn(f"Convergence not detected after {maxiter} steps.", MaxiterReached)
 
         return self.converged
 
