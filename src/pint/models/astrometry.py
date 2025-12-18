@@ -299,6 +299,8 @@ class Astrometry(DelayComponent):
         raise NotImplementedError
 
     def vlbi_coord_rotation(self) -> Optional[np.ndarray]:
+        """Returns the coordinate rotation matrix between VLBI and pulsar
+        timing coordinate systems if the rotation parameters are given."""
         if (
             self.VLBIAX.quantity is not None
             and self.VLBIAY.quantity is not None
