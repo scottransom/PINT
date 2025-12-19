@@ -979,7 +979,7 @@ class DownhillFitter(Fitter):
                     # This could be an exception evaluating new_state.chi2 or an increase in value
                     # If bad parameter values escape, look in ModelState.resids for the except
                     # that should catch them
-                    lambda_ /= 1.1
+                    lambda_ /= 1.5
                     log.trace(f"Iteration {i}: Shortening step to {lambda_}: {e}")
                     if lambda_ < min_lambda:
                         exception = e
