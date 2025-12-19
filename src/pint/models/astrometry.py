@@ -300,7 +300,11 @@ class Astrometry(DelayComponent):
 
     def vlbi_coord_rotation(self) -> Optional[np.ndarray]:
         """Returns the coordinate rotation matrix between VLBI and pulsar
-        timing coordinate systems if the rotation parameters are given."""
+        timing coordinate systems if the rotation parameters are given.
+
+        Reference:
+            Madison+ 2013, The Astrophysical Journal 777 104 (Equation 9)
+        """
         if (
             self.VLBIAX.quantity is not None
             and self.VLBIAY.quantity is not None
@@ -576,6 +580,8 @@ class AstrometryEquatorial(Astrometry):
             )
         # ra,dec now in radians
         ra, dec = starpmout[0], starpmout[1]
+
+        # Reference: Madison+ 2023, The Astrophysical Journal 777 104 (Equations 9, 10)
         Omega = self.vlbi_coord_rotation()
         Khat = self.xyz_from_radec(ra, dec)
         return Omega @ Khat if Omega is not None else Khat
@@ -1077,6 +1083,8 @@ class AstrometryEcliptic(Astrometry):
         # lon,lat now in radians
         lon, lat = starpmout[0], starpmout[1]
         Khat = self.xyz_from_latlong(lon, lat)
+
+        # Reference: Madison+ 2023, The Astrophysical Journal 777 104 (Equations 9, 10)
         Omega = self.vlbi_coord_rotation()
         return Omega @ Khat if Omega is not None else Khat
 
