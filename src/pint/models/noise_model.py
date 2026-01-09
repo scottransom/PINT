@@ -1309,7 +1309,7 @@ def get_rednoise_freqs(
         # Combine log + linear
         return np.concatenate((f_log, f_lin))
 
-    have_logmode = logmode is not None and logmode >= 0
+    have_logmode = logmode is not None and logmode > 0
     have_nlog = nlog is not None and nlog > 0
     have_fmin = f_min is not None and f_min > 0
 
